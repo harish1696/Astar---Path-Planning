@@ -63,6 +63,8 @@ make
 
 ## How to run demo
 ```
+cd <path to repository>
+cd build
 ./getPath
 ```
 
