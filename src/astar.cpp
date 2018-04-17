@@ -34,11 +34,10 @@
 using namespace cv;
 
 int main(int argc, const char**argv) {
-  Mat map1 = imread("../2dmap/turtlebot_cmap.png", CV_LOAD_IMAGE_GRAYSCALE);
+  Mat map1(150, 250, CV_8UC1, cv::Scalar(255));
   int x, y, parent, prev;
-  double theta = 0;
-  std::vector<int> start = {200, 100};
-  std::vector<int> goal = {200, 500};
+  std::vector<int> start = {4, 4};
+  std::vector<int> goal = {200, 140};
   x = start[0];
   y = start[1];
   Nodes nodes(map1, x, y);
@@ -47,19 +46,19 @@ int main(int argc, const char**argv) {
   parent = 0;
   bool success;
   bool flag = false;
+  double d = (double)sqrt(2);
   clock_t t1, t2;
   t1 = clock();
   while(!flag) {
-    // action 1 - v_left = 5mps and v_right = 5mps
-    success = nodes.action1(x, y, theta);
-    if (success) {
-      std::vector<double> pos = nodes.getxytheta();
-      int New = nodes.isNew(round(pos[0]), round(pos[1]), pos[2]);
-      double heuristic = nodes.costToGo(pos[0], pos[1], goal);
-      double cost = nodes.NodeInfo[parent][2] + nodes.costToCome(pos, x, y);
+    success = nodes.moveUp(x, y);
+    if (success) {	
+      int New = nodes.isNew(x, y + 1);
+      double heuristic = nodes.costToGo(x, y + 1, goal);
+      double cost = nodes.NodeInfo[parent][2] + 1;
       if (New == 0) {
-        nodes.addNode(round(pos[0]), round(pos[1]), 5, 5, pos[2], parent, cost, heuristic);
-      } else {
+        nodes.addNode(x, y + 1, parent, cost);
+        nodes.addNode(x, y + 1, parent, cost, heuristic);
+      } else { 
         int index = nodes.findIndex(New - 1);
         if (index != 0) {
           nodes.NodeInfo[New - 1][1] = (cost < nodes.NodeInfo[New - 1][2]) ? parent : nodes.NodeInfo[New - 1][1];
@@ -69,15 +68,14 @@ int main(int argc, const char**argv) {
         }  
       }
     }
-    // action 2 - v_left = 10mps and v_right = 10mps
-    success = nodes.action2(x, y, theta);
-    if (success) {
-      std::vector<double> pos = nodes.getxytheta();
-      int New = nodes.isNew(round(pos[0]), round(pos[1]), pos[2]);
-      double heuristic = nodes.costToGo(pos[0], pos[1], goal);
-      double cost = nodes.NodeInfo[parent][2] + nodes.costToCome(pos, x, y);;
+    success = nodes.moveRight(x, y);
+    if (success) {	
+      int New = nodes.isNew(x + 1, y);
+      double heuristic = nodes.costToGo(x + 1, y, goal);
+      double cost = nodes.NodeInfo[parent][2] + 1;
       if (New == 0) {  
-        nodes.addNode(round(pos[0]), round(pos[1]), 10, 10, pos[2], parent, cost, heuristic);
+        nodes.addNode(x + 1, y, parent, cost);
+        nodes.addNode(x + 1, y, parent, cost, heuristic);
       } else {
         int index = nodes.findIndex(New - 1);
         if (index != 0) {
@@ -88,15 +86,14 @@ int main(int argc, const char**argv) {
         }  
       }    
     }
-    // action 3 - v_left = 10mps and v_right = 0mps
-    success = nodes.action3(x, y, theta);
+    success = nodes.moveDown(x, y);
     if (success) {
-      std::vector<double> pos = nodes.getxytheta();
-      int New = nodes.isNew(round(pos[0]), round(pos[1]), pos[2]);
-      double heuristic = nodes.costToGo(pos[0], pos[1], goal);
-      double cost = nodes.NodeInfo[parent][2] + nodes.costToCome(pos, x, y);;
+      int New = nodes.isNew(x, y - 1);
+      double heuristic = nodes.costToGo(x, y - 1, goal);
+      double cost = nodes.NodeInfo[parent][2] + 1;
       if (New == 0) {
-        nodes.addNode(round(pos[0]), round(pos[1]), 10, 0, pos[2], parent, cost, heuristic);
+        nodes.addNode(x, y - 1, parent, cost);
+        nodes.addNode(x, y - 1, parent, cost, heuristic);
       } else {
         int index = nodes.findIndex(New - 1);
         if (index != 0) {
@@ -107,15 +104,14 @@ int main(int argc, const char**argv) {
         }  
       }   
     }
-    // action 4 - v_left = 0mps and v_right = 10mps
-    success = nodes.action4(x, y, theta);
+    success = nodes.moveLeft(x, y);
     if (success) {
-      std::vector<double> pos = nodes.getxytheta();
-      int New = nodes.isNew(round(pos[0]), round(pos[1]), pos[2]);
-      double heuristic = nodes.costToGo(pos[0], pos[1], goal);
-      double cost = nodes.NodeInfo[parent][2] + nodes.costToCome(pos, x, y);;
+      int New = nodes.isNew(x - 1, y);
+      double heuristic = nodes.costToGo(x - 1, y, goal);
+      double cost = nodes.NodeInfo[parent][2] + 1;
       if (New == 0) { 
-        nodes.addNode(round(pos[0]), round(pos[1]), 0, 10, pos[2], parent, cost, heuristic);
+        nodes.addNode(x - 1, y, parent, cost);
+        nodes.addNode(x - 1, y, parent, cost, heuristic);
       } else {
         int index = nodes.findIndex(New - 1);
         if (index != 0) {
@@ -126,15 +122,14 @@ int main(int argc, const char**argv) {
         }  
       }   
     }
-    // action 5 - v_left = 10mps and v_right = 5mps
-    success = nodes.action5(x, y, theta);
+    success = nodes.moveUpLeft(x, y);
     if (success) {
-      std::vector<double> pos = nodes.getxytheta();
-      int New = nodes.isNew(round(pos[0]), round(pos[1]), pos[2]);
-      double heuristic = nodes.costToGo(pos[0], pos[1], goal);
-      double cost = nodes.NodeInfo[parent][2] + nodes.costToCome(pos, x, y);;
+      int New = nodes.isNew(x - 1, y + 1);
+      double heuristic = nodes.costToGo(x - 1, y + 1, goal);
+      double cost = nodes.NodeInfo[parent][2] + d;
       if (New == 0) { 
-        nodes.addNode(round(pos[0]), round(pos[1]), 10, 5, pos[2], parent, cost, heuristic);
+        nodes.addNode(x - 1, y + 1, parent, cost);
+        nodes.addNode(x - 1, y + 1, parent, cost, heuristic);
       } else {
         int index = nodes.findIndex(New - 1);
         if (index != 0) {
@@ -145,15 +140,14 @@ int main(int argc, const char**argv) {
         }  
       }   
     }
-    // action 6 - v_left = 5mps and v_right = 10mps
-    success = nodes.action6(x, y, theta);
+    success = nodes.moveUpRight(x, y);
     if (success) {
-      std::vector<double> pos = nodes.getxytheta();
-      int New = nodes.isNew(round(pos[0]), round(pos[1]), pos[2]);
-      double heuristic = nodes.costToGo(pos[0], pos[1], goal);
-      double cost = nodes.NodeInfo[parent][2] + nodes.costToCome(pos, x, y);;
+      int New = nodes.isNew(x + 1, y + 1);
+      double heuristic = nodes.costToGo(x + 1, y + 1, goal);
+      double cost = nodes.NodeInfo[parent][2] + d;
       if (New == 0) {  
-        nodes.addNode(round(pos[0]), round(pos[1]), 5, 10, pos[2], parent, cost, heuristic);
+        nodes.addNode(x + 1, y + 1, parent, cost);
+        nodes.addNode(x + 1, y + 1, parent, cost, heuristic);
       } else {
         int index = nodes.findIndex(New - 1);
         if (index != 0) {
@@ -164,15 +158,14 @@ int main(int argc, const char**argv) {
         }  
       }   
     }
-    // action 3 - v_left = 5mps and v_right = 0mps
-    success = nodes.action7(x, y, theta);
+    success = nodes.moveDownRight(x, y);
     if (success) {
-      std::vector<double> pos = nodes.getxytheta();
-      int New = nodes.isNew(round(pos[0]), round(pos[1]), pos[2]);
-      double heuristic = nodes.costToGo(pos[0], pos[1], goal);
-      double cost = nodes.NodeInfo[parent][2] + nodes.costToCome(pos, x, y);;
+      int New = nodes.isNew(x + 1, y - 1);
+      double heuristic = nodes.costToGo(x + 1, y - 1, goal);
+      double cost = nodes.NodeInfo[parent][2] + d;
       if (New == 0) {  
-        nodes.addNode(round(pos[0]), round(pos[1]), 5, 0, pos[2], parent, cost, heuristic);
+        nodes.addNode(x + 1, y - 1, parent, cost);
+        nodes.addNode(x + 1, y - 1, parent, cost, heuristic);
       } else {
         int index = nodes.findIndex(New - 1);
         if (index != 0) {
@@ -183,15 +176,14 @@ int main(int argc, const char**argv) {
         }  
       }   
     }
-    // action 3 - v_left = 0mps and v_right = 5mps
-    success = nodes.action8(x, y, theta);
+    success = nodes.moveDownLeft(x, y);
     if (success) {
-      std::vector<double> pos = nodes.getxytheta();
-      int New = nodes.isNew(round(pos[0]), round(pos[1]), pos[2]);
-      double heuristic = nodes.costToGo(pos[0], pos[1], goal);
-      double cost = nodes.NodeInfo[parent][2] + nodes.costToCome(pos, x, y);;
+      int New = nodes.isNew(x - 1, y - 1);
+      double heuristic = nodes.costToGo(x - 1, y - 1, goal);
+      double cost = nodes.NodeInfo[parent][2] + d;
       if (New == 0) {
-        nodes.addNode(round(pos[0]), round(pos[1]), 0, 5, pos[2], parent, cost, heuristic);
+        nodes.addNode(x - 1, y - 1, parent, cost);
+        nodes.addNode(x - 1, y - 1, parent, cost, heuristic);
       } else {
         int index = nodes.findIndex(New - 1);
         if (index != 0) {
@@ -202,18 +194,18 @@ int main(int argc, const char**argv) {
         }  
       }  
     }
-    // deleting the current from priority queue
     nodes.pQueue.erase(nodes.pQueue.begin());
-    // sorting the priority queue to choose the next action
     nodes.sortQueue();
+    int index = nodes.pQueue[0][0];
+    //std::cout << "Next: " << index << std::endl;
+    if (nodes.Node[index][0] == goal[0] && nodes.Node[index][1] == goal[1]) flag = true;
     parent = nodes.pQueue[0][0];
-    if (nodes.Node[parent][0] == goal[0] && nodes.Node[parent][1] == goal[1]) flag = true;
-    x = nodes.Node[parent][0];
-    y = nodes.Node[parent][1];
-    theta = nodes.Node[parent][2];
+    x = nodes.Node[index][0];
+    y = nodes.Node[index][1];
+    // Uncomment the following line to visulaize each node visited
+    //nodes.showtraversal(map1, x, y);
   }
   nodes.optPath();
-  nodes.storeVelocity();
   t2 = clock();
   float diff = float(t2) - float(t1);
   float seconds = diff / CLOCKS_PER_SEC;

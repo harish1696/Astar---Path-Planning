@@ -22,7 +22,6 @@
  *  SOFTWARE.
  */
 
-
 #pragma once
 
 #include <iostream>
@@ -36,7 +35,8 @@ public:
 	Map();
 	~Map();
 	void createMap(cv::Mat &map1);
-	bool isObstacle(int x, int y, int x_new, int y_new);
+	bool isObstacle(int x, int y);
+	void findMnC();
 	void displayMap(cv::Mat &map1, int key = 0);	
 
 private:

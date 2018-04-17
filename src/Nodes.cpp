@@ -22,7 +22,6 @@
  *  SOFTWARE.
  */
 
-
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -36,150 +35,107 @@ bool sortCriteria(std::vector<double> &node1, std::vector<double> &node2) {
 
 Nodes::Nodes(cv::Mat &img, int x, int y) {
   map.createMap(img);
-  Node.push_back({x, y, 0, 0, 0});
+  Node.push_back({x, y});
   NodeInfo.push_back({0, 0, 0});
   pQueue.push_back({0, 0, 0});
   nodeNumber = 1;
-  freq = 2;
-  r = 0.038;
-  L = 0.354;
-  dist2pixel = 0.017;
-  curr_x = 0;
-  curr_y = 0;
-  curr_theta = 0;
 }
 
 Nodes::~Nodes() {}
 
-bool Nodes::action1(double x, double y, double theta) {
-  int vl = 5;
-  int vr = 5;
-  double vel_mps = ((vl + vr) / 2) * r;
-  curr_theta = theta + ((vr - vl) / L) * r; 
-  curr_x = x + (double)(vel_mps / (freq * dist2pixel)) * sin(theta);  
-  curr_y = y + (double)(vel_mps / (freq * dist2pixel)) * cos(theta);
+bool Nodes::moveUp(int x, int y) {
+  y = y + 1;
   bool poss;
-  if (x >= 0 && y >= 0 && x < 584 && y < 637)
-  	return poss = map.isObstacle(round(x), round(y), round(curr_x), round(curr_y));
+  if (y < 150)
+  	return poss = map.isObstacle(x, y);
   else
   	return poss = false;
 }
 
-bool Nodes::action2(double x, double y, double theta) {
-  int vl = 10;
-  int vr = 10;
-  double vel_mps = ((vl + vr) / 2) * r;
-  curr_theta = theta + ((vr - vl) / L) * r; 
-  curr_x = x + (double)(vel_mps / (freq * dist2pixel)) * sin(theta);  
-  curr_y = y + (double)(vel_mps / (freq * dist2pixel)) * cos(theta);
+bool Nodes::moveDown(int x, int y) {
+  y = y - 1;
   bool poss;
-  if (x >= 0 && y >= 0 && x < 584 && y < 637)
-  	return poss = map.isObstacle(round(x), round(y), round(curr_x), round(curr_y));
+  if (y >= 0)
+  	return poss = map.isObstacle(x, y);
   else
   	return poss = false;
 }
 
-bool Nodes::action3(double x, double y, double theta) {
-  int vl = 10;
-  int vr = 0;
-  double vel_mps = ((vl + vr) / 2) * r;
-  curr_theta = theta + ((vr - vl) / L) * r; 
-  curr_x = x + (double)(vel_mps / (freq * dist2pixel)) * sin(theta);  
-  curr_y = y + (double)(vel_mps / (freq * dist2pixel)) * cos(theta);
+bool Nodes::moveLeft(int x, int y) {
+  x = x - 1;
   bool poss;
-  if (x >= 0 && y >= 0 && x < 584 && y < 637)
-  	return poss = map.isObstacle(round(x), round(y), round(curr_x), round(curr_y));
+  if (x >= 0)
+  	return poss = map.isObstacle(x, y);
   else
   	return poss = false;
 }
 
-bool Nodes::action4(double x, double y, double theta) {
-  int vl = 0;
-  int vr = 10;
-  double vel_mps = ((vl + vr) / 2) * r;
-  curr_theta = theta + ((vr - vl) / L) * r; 
-  curr_x = x + (double)(vel_mps / (freq * dist2pixel)) * sin(theta);  
-  curr_y = y + (double)(vel_mps / (freq * dist2pixel)) * cos(theta);
+bool Nodes::moveRight(int x, int y) {
+  x = x + 1;
   bool poss;
-  if (x >= 0 && y >= 0 && x < 584 && y < 637)
-  	return poss = map.isObstacle(round(x), round(y), round(curr_x), round(curr_y));
+  if (x < 250)
+  	return poss = map.isObstacle(x, y);
   else
   	return poss = false;
 }
 
-bool Nodes::action5(double x, double y, double theta) {
-  int vl = 10;
-  int vr = 5;
-  double vel_mps = ((vl + vr) / 2) * r;
-  curr_theta = theta + ((vr - vl) / L) * r; 
-  curr_x = x + (double)(vel_mps / (freq * dist2pixel)) * sin(theta);  
-  curr_y = y + (double)(vel_mps / (freq * dist2pixel)) * cos(theta);
+bool Nodes::moveUpLeft(int x, int y) {
+  x = x - 1;
+  y = y	+ 1;
   bool poss;
-  if (x >= 0 && y >= 0 && x < 584 && y < 637)
-  	return poss = map.isObstacle(round(x), round(y), round(curr_x), round(curr_y));
+  if (x >= 0 && y < 150)
+  	return poss = map.isObstacle(x, y);
   else
   	return poss = false;
 }
 
-bool Nodes::action6(double x, double y, double theta) {
-  int vl = 5;
-  int vr = 10;
-  double vel_mps = ((vl + vr) / 2) * r;
-  curr_theta = theta + ((vr - vl) / L) * r; 
-  curr_x = x + (double)(vel_mps / (freq * dist2pixel)) * sin(theta);  
-  curr_y = y + (double)(vel_mps / (freq * dist2pixel)) * cos(theta);
+bool Nodes::moveUpRight(int x, int y) {
+  x = x + 1;
+  y = y	+ 1;
   bool poss;
-  if (x >= 0 && y >= 0 && x < 584 && y < 637)
-  	return poss = map.isObstacle(round(x), round(y), round(curr_x), round(curr_y));
+  if (x < 250 && y < 150)
+  	return poss = map.isObstacle(x, y);
   else
   	return poss = false;
 }
 
-bool Nodes::action7(double x, double y, double theta) {
-  int vl = 5;
-  int vr = 0;
-  double vel_mps = ((vl + vr) / 2) * r;
-  curr_theta = theta + ((vr - vl) / L) * r; 
-  curr_x = x + (double)(vel_mps / (freq * dist2pixel)) * sin(theta);  
-  curr_y = y + (double)(vel_mps / (freq * dist2pixel)) * cos(theta);
+bool Nodes::moveDownLeft(int x, int y) {
+  x = x - 1;
+  y = y	- 1;
   bool poss;
-  if (x >= 0 && y >= 0 && x < 584 && y < 637)
-  	return poss = map.isObstacle(round(x), round(y), round(curr_x), round(curr_y));
+  if (x >= 0 && y >= 0)
+  	return poss = map.isObstacle(x, y);
   else
   	return poss = false; 
 }
 
-bool Nodes::action8(double x, double y, double theta) {
-  int vl = 0;
-  int vr = 5;
-  double vel_mps = ((vl + vr) / 2) * r;
-  curr_theta = theta + ((vr - vl) / L) * r; 
-  curr_x = x + (double)(vel_mps / (freq * dist2pixel)) * sin(theta);  
-  curr_y = y + (double)(vel_mps / (freq * dist2pixel)) * cos(theta);
+bool Nodes::moveDownRight(int x, int y) {
+  x = x + 1;
+  y = y	- 1;
   bool poss;
-  if (x >= 0 && y >= 0 && x < 584 && y < 637)
-  	return poss = map.isObstacle(round(x), round(y), round(curr_x), round(curr_y));
+  if (x < 250 && y >= 0)
+  	return poss = map.isObstacle(x, y);
   else
   	return poss = false;
 }
 
-std::vector<double> Nodes::getxytheta() {
-  return {curr_x, curr_y, curr_theta};
+void Nodes::addNode(int x, int y, int parent, double cost) {
+  std::vector<int> temp1 = {x, y};
+  std::vector<double> temp2 = {(double)nodeNumber, (double)parent, cost};
+  Node.push_back(temp1);
+  NodeInfo.push_back(temp2);
 }
 
-void Nodes::addNode(int x, int y, int vl, int vr, double angle, int parent, double cost, double heuristic) {
-  std::vector<double> temp1 = {(double)(x), (double)(y)};
-  std::vector<double> temp2 = {(double)nodeNumber, (double)parent, cost};
-  Node.push_back({(double)(x), (double)(y), angle, vl, vr});
-  NodeInfo.push_back({(double)nodeNumber, (double)parent, cost});
-  pQueue.push_back({(double)nodeNumber, (double)parent, cost + heuristic});
+void Nodes::addNode(int x, int y, int parent, double cost, double heuristic) {
+  std::vector<double> temp2 = {(double)nodeNumber, (double)parent, cost + heuristic};
+  pQueue.push_back(temp2);
   nodeNumber += 1;
 }
 
-int Nodes::isNew(int x, int y, double angle) {
-  vec_size length = Node.size();
+int Nodes::isNew(int x, int y) {
+  vec_size length = Node.size();	
   for (int i = 0; i < length; i++) {
-  	if(Node[i][0] == x && Node[i][1] == y && Node[i][2] == angle) {
+  	if(Node[i][0] == x && Node[i][1] == y) {
       return i + 1;
   	}
   }
@@ -196,14 +152,16 @@ int Nodes::findIndex(int New) {
 }
 
 void Nodes::optPath() {
+  std::vector<int> temp;
+  // vec_size node = Node.size() - 1;
   int node = pQueue[0][0];
   while(node > 0) {
-    Path.push_back({Node[node][0], Node[node][1]});
-    pathVelocity.push_back({Node[node][3], Node[node][4]});
+    temp = {Node[node][0], Node[node][1]};
+    Path.push_back(temp);
     node = NodeInfo[node][1];  
   }
-  Path.push_back({Node[0][0], Node[0][1]});
-  pathVelocity.push_back({Node[0][3], Node[0][4]});
+  temp = {Node[0][0], Node[0][1]};
+  Path.push_back(temp);
 }
 
 void Nodes::drawPath(cv::Mat &img) {
@@ -219,26 +177,25 @@ void Nodes::drawPath(cv::Mat &img) {
   map.displayMap(img);
 }
 
-void Nodes::storeVelocity() {
-  vec_size length = pathVelocity.size();
-  std::ofstream output;
-  output.open("PathVelocity.csv");
-  for (int i = length - 1; i >= 0; i--) {
-    std::cout << pathVelocity[i][0] << " " << pathVelocity[i][1] << std::endl;
-    output << pathVelocity[i][0] << "," << pathVelocity[i][1] << std::endl;
-  }
+void Nodes::showtraversal(cv::Mat &img, int x, int y) {
+  vec_size length = Node.size() - 1;
+  cv::Point pt1, pt2;
+  if (x < 250 && y < 150) {
+    pt1.x = x;
+    pt1.y = y;
+    pt2.x = pt1.x + 1;
+    pt2.y = pt1.y + 1;
+    cv::line(img, pt1, pt2, cv::Scalar(180), 1, 8, 0);
+    map.displayMap(img, 1);
+  }  
 }
 
-double Nodes::costToGo(double x, double y, std::vector<int> goal) {
+double Nodes::costToGo(int x, int y, std::vector<int> goal) {
   double distance = (double)sqrt((pow(goal[0] - x, 2)) + (pow(goal[1] - y, 2)));
   return distance;    
-}
-
-double Nodes::costToCome(std::vector<double> pos, double x, double y) {
-  double distance = (double)sqrt((pow(pos[0] - x, 2)) + (pow(pos[1] - y, 2)));
-  return distance;
 }
 
 void Nodes::sortQueue() {
   std::sort(pQueue.begin(), pQueue.end(), sortCriteria);
 }
+

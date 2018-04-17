@@ -22,7 +22,6 @@
  *  SOFTWARE.
  */
 
-
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -34,67 +33,69 @@
 using namespace cv;
 
 Map::Map() {	
-  for (int i = 0; i < 637; i++) {
+  for (int i = 0; i < 150; i++) {
     std::vector<int > temp;
-    for (int j = 0; j < 584; j++) {
+    for (int j = 0; j < 250; j++) {
       temp.push_back(0);   	
     }
     cSpace.push_back(temp);
   }
+  x1 = {120,158, 168, 145, 120};
+  y1 = {55, 51, 14, 14, 55};
+  x2 = {158, 165, 188, 168, 158};
+  y2 = {51, 89, 51, 14, 51};
+  findMnC();
 }
 
 Map::~Map() {}
 
 void Map::createMap(cv::Mat &map1) {
-  cv::Mat dst = cv::Mat(map1.rows, map1.cols, CV_8UC1);
-  cv::flip(map1, dst, 0);
-  map1 = dst;
+  for (int x = 0; x < 250; x++) {
+    for (int y = 0; y < 150; y++) {
+      if (x > 55 && x < 105 && y < 113 && y > 67) {
+        cSpace[y][x] = 1;          
+      }
+      if (pow(x-180, 2) + pow(y-120, 2) - pow(15, 2) < 0) {
+        cSpace[y][x] = 1;   
+      }
+      if (y - m1[0]*x - c1[0] < 0 && y - m1[1]*x - c1[1] < 0 &&
+      	  y - m1[2]*x - c1[2] > 0 && y - m1[3]*x - c1[3] > 0) {
+      	cSpace[y][x] = 1;
+      }
+      if (y - m2[0]*x - c2[0] < 0 && y - m2[1]*x - c2[1] < 0 &&
+      	  y - m2[2]*x - c2[2] > 0 && y - m2[3]*x - c2[3] > 0) {
+      	cSpace[y][x] = 1;
+      }  
+    }
+  }
   for (int row = 0; row < map1.rows; row++) {
     for (int col = 0; col < map1.cols; col++) {
-      if(map1.at<uchar>(row, col) == 0)
-        cSpace[row][col] = 1;
+      if(cSpace[row][col] == 1)
+        map1.at<uchar>(row,col) = 0;
       else
-        cSpace[row][col] = 0;
+        map1.at<uchar>(row,col) = 255;
     }
   }   
 }
 
-bool Map::isObstacle(int x, int y, int x_new, int y_new) {
-  bool positive_x = (x < x_new) ? true : false;
-  bool positive_y = (y < y_new) ? true : false;
-  if (positive_x && positive_y) {
-    for (int j = 0; j < y_new - y; j++) {
-      for (int i = 0; i < x_new - x; i++) { 
-        if (cSpace[y + j][x + i] == 1)
-          return false;
-      }
-    }
-  }
-  if (positive_x && !positive_y) {
-    for (int j = 0; j < y - y_new; j++) {
-      for (int i = 0; i < x_new - x; i++) { 
-        if (cSpace[y - j][x + i] == 1)
-          return false;
-      }
-    }
-  } 
-  if (!positive_x && positive_y) {
-    for (int j = 0; j < y_new - y; j++) {
-      for (int i = 0; i < x - x_new; i++) { 
-        if (cSpace[y + j][x - i] == 1)
-          return false;
-      }
-    }
-  }
-  if (!positive_x && positive_y) {
-    for (int j = 0; j < y - y_new; j++) {
-      for (int i = 0; i < x - x_new; i++) { 
-        if (cSpace[y - j][x - i] == 1)
-          return false;
-      }
-    }
-  }
-  return true;         	
+bool Map::isObstacle(int x, int y) {
+    if (cSpace[y][x] == 1)
+      return false;
+    else
+      return true;  	
+}
+
+void Map::findMnC() {
+   for(int i = 0; i < 4; i++) {
+     float slope1 = (float)(y1[i] - y1[i+1]) / (x1[i] - x1[i+1]);
+     float slope2 = (float)(y2[i] - y2[i+1]) / (x2[i] - x2[i+1]);
+     m1.push_back(slope1); 
+     m2.push_back(slope2);
+     float constant1 = (float)((y1[i] - m1[i]*x1[i]));
+     float constant2 = (float)((y2[i] - m2[i]*x2[i]));  
+     c1.push_back(constant1);
+     c2.push_back(constant2);
+   }
 }
 
 void Map::displayMap(cv::Mat &map1, int key) {
