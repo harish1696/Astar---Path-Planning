@@ -1,7 +1,7 @@
 # A* Path Planning
 
 ## Overview
-The module is capable of finding a path between two given points in a given 2d map using Astar algorithm. The 2d map is obtained by getting a gmap from the given rrlab.sdf file and then converting that to an .png file. The .png file is processed using OpenCv to obtain a C-Space map with 1's as obstacles and 0's as free space. Also, the known radius of the bot is used to pad 1's to the obstacles so that the robot can be considered a point robot. 
+The module is capable of finding a path between two given points in a given 2d map using Astar algorithm.
 
 ## Installing Dependencies
 ```
@@ -53,7 +53,7 @@ sudo ldconfig
 
 ## How to build
 ```
-git clone --recursive https://github.com/harish1696/Astar---Path-Planning
+git clone -b project2 --single-branch https://github.com/harish1696/Astar---Path-Planning
 cd <path to repository>
 mkdir build
 cd build
@@ -65,8 +65,6 @@ make
 ```
 cd <path to repository>
 cd build
-./getPath
+./Astar
 ```
-
-## Known Issues
-The path planner is sometimes unable to find a path between 2 given points since the actions chosen move greater than 1 pixel in both x and y direction. But this can be solved by increasing the frequency which reduces the step size/resolution making it easier for it to find the path.
+To visualize the nodes visited, uncomment line 206 in astar.cpp, build and execute the above.
