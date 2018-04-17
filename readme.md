@@ -2,6 +2,7 @@
 
 ## Overview
 The module is capable of finding a path between two given points in a given 2d map using Astar algorithm.
+![astar_nodesvisited](https://user-images.githubusercontent.com/13302860/38872359-0b3d321a-4221-11e8-81b6-cb5d03a85a44.png)
 
 ## Installing Dependencies
 ```
